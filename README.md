@@ -5,6 +5,17 @@ This is an adaptation of the repository of Lua development code, as seen by the 
 ## Prerequistites
 - [Docker](https://www.docker.com)
 
+## Structure
+
+- `build` - build outputs
+  - `bin` - final binaries
+  - `obj` - intermediates files (.o) 
+- `doc` - documentation files
+- `include` - PUBLIC header files (.h/.hpp files)
+- `src` - PRIVATE source files
+- `test` - tests files
+
+
 ## Official Lua Information
 
 For complete information about Lua, visit [Lua.org](https://www.lua.org/).
