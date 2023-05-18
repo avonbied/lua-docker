@@ -11,8 +11,8 @@ This is an adaptation of the repository of Lua development code, as seen by the 
   - `bin` - final binaries
   - `obj` - intermediates files (.o) 
 - `doc` - documentation files
+- `include` - PUBLIC header files (.h/.hpp files)
 - `src` - PRIVATE source files
-  - `include` - PUBLIC header files (.h/.hpp files)
 - `test` - tests files
 
 

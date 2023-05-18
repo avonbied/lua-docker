@@ -7,21 +7,22 @@
 PLAT= guess
 
 CC= gcc -std=gnu99
-INC_DIR= include
-CFLAGS= -O2 -Wall -Wextra -DLUA_COMPAT_5_3 -I$(INC_DIR) $(SYSCFLAGS)
+CFLAGS= -O2 -Wall -Wextra -DLUA_COMPAT_5_3 $(SYSCFLAGS) -I$(INC_DIR)
 LDFLAGS= $(SYSLDFLAGS)
 LIBS= -lm $(SYSLIBS)
 
-AR= ar rcu
+AR= ar -rcu
 RANLIB= ranlib
-RM= rm -f
+RM= rm -fR
 UNAME= uname
 
 SYSCFLAGS=
 SYSLDFLAGS=
 SYSLIBS=
 
-## ADDED VARS
+## Directories
+SRC_DIR=src
+INC_DIR=include
 
 # Special flags for compiler modules; -Os reduces code size.
 CMCFLAGS=
@@ -30,46 +31,60 @@ CMCFLAGS=
 
 PLATS= guess aix bsd c89 freebsd generic ios linux linux-readline macosx mingw posix solaris
 
-CORE=	lapi lcode lctype ldebug ldo ldump lfunc lgc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio
-LIB=	lauxlib lbaselib lcorolib ldblib liolib lmathlib loadlib loslib lstrlib ltablib lutf8lib linit
-BASE_O= $(foreach F,$(CORE),$(F).o) $(foreach F,$(LIB),$(F).o)
+# CORE=	lapi lcode lctype ldebug ldo ldump lfunc lgc llex lmem lobject lopcodes lparser lstate lstring ltable ltm lundump lvm lzio
+# LIB=	lauxlib lbaselib lcorolib ldblib liolib lmathlib loadlib loslib lstrlib ltablib lutf8lib linit
+# BASE_O= $(foreach F,$(CORE),$(OBJ_DIR)/$(F).o) $(foreach F,$(LIB),$(OBJ_DIR)/$(F).o) $(MYOBJS)
 
-LUA_LIB=	liblua.a
-LUA_EXE=	lua
-LUAC_EXE=	luac
+# Intermediate Outputs
+OBJ_DIR=build/obj
+SOURCES := $(wildcard $(SRC_DIR)/*.c)
+OBJECTS := $(SOURCES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-ALL_O= $(BASE_O) $(LUA_EXE).o $(LUAC_EXE).o
-ALL_LUA= $(LUA_LIB) $(LUA_EXE) $(LUAC_EXE)
+# Outputs
+LUA_LIB= liblua.a
+LUA_EXE= lua
+LUAC_EXE= luac
+
+BIN_DIR=build/bin
+LIB_OUT := $(BIN_DIR)/$(LUA_LIB)
+BINS := $(foreach B,$(LUA_EXE) $(LUAC_EXE),$(BIN_DIR)/$(B))
+
+$(OBJ_DIR):
+	@mkdir -p $(OBJ_DIR)
+
+$(BIN_DIR):
+	@mkdir -p $(BIN_DIR)
+
+$(OBJECTS): $(OBJ_DIR)/%.o : $(SRC_DIR)/%.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) $(CMCFLAGS) -c $< -o $@
+	@echo "Compiled "$<" successfully!"
+
+$(LIB_OUT): $(filter-out %lua.o %luac.o,$(OBJECTS)) | $(BIN_DIR)
+	$(AR) $@ $^
+	$(RANLIB) $@
+
+$(BINS): $(BIN_DIR)/% : $(OBJ_DIR)/%.o $(LIB_OUT) | $(BIN_DIR)
+	$(CC) -o $@ $(LDFLAGS) $^ $(LIBS)
+	@echo "Compiled "$@" successfully!"
+
+
+ALL_T= $(LUA_LIB) $(LUA_EXE) $(LUAC_EXE)
 
 # Targets start here.
 default: $(PLAT)
 
-all: $(ALL_LUA)
+all: exe lib
 
-o:  $(ALL_O)
+obj: $(OBJECTS)
+exe: $(BINS)
+lib: $(LIB_OUT)
 
-# Build binaries
-$(LUA_EXE): $(LUA_EXE).o $(LUA_LIB)
-	$(CC) -o $@ $(LDFLAGS) $^ $(LIBS)
 
-$(LUAC_EXE): $(LUAC_EXE).o $(LUA_LIB)
-	$(CC) -o $@ $(LDFLAGS) $^ $(LIBS)
-
-# Build .o files
-# Compiler modules may use special flags.
-%.o: %.c
-	@echo " Building..."
-	$(CC) $(CFLAGS) $(CMCFLAGS) -c $^ -o $@
-
-$(LUA_LIB): $(BASE_O)
-	$(AR) $@ $(BASE_O)
-	$(RANLIB) $@
-
-test:
-	./$(LUA_T) -v
+test:| exe
+	$(foreach B,$(BINS),./$(B) -v;)
 
 clean:
-	$(RM) $(ALL_LUA) $(ALL_O)
+	$(RM) $(BIN_DIR) $(OBJ_DIR)
 
 depend:
 	@$(CC) $(CFLAGS) -MM l*.c
@@ -98,7 +113,7 @@ guess:
 	@$(MAKE) `$(UNAME)`
 
 AIX aix:
-	$(MAKE) $(ALL) CC="xlc" CFLAGS="-O2 -DLUA_USE_POSIX -DLUA_USE_DLOPEN" SYSLIBS="-ldl" SYSLDFLAGS="-brtl -bexpall"
+	$(MAKE) $(ALL) CC="xlc" SYSCFLAGS="-O2 -DLUA_USE_POSIX -DLUA_USE_DLOPEN" SYSLIBS="-ldl" SYSLDFLAGS="-brtl -bexpall"
 
 bsd:
 	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_POSIX -DLUA_USE_DLOPEN" SYSLIBS="-Wl,-E"
@@ -131,10 +146,10 @@ Darwin macos macosx:
 	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_MACOSX -DLUA_USE_READLINE" SYSLIBS="-lreadline"
 
 mingw:
-	$(MAKE) "LUA_A=lua54.dll" "LUA_T=lua.exe" \
+	$(MAKE) "LUA_LIB=lua54.dll" "LUA_EXE=lua.exe" \
 	"AR=$(CC) -shared -o" "RANLIB=strip --strip-unneeded" \
 	"SYSCFLAGS=-DLUA_BUILD_AS_DLL" "SYSLIBS=" "SYSLDFLAGS=-s" lua.exe
-	$(MAKE) "LUAC_T=luac.exe" luac.exe
+	$(MAKE) "LUAC_EXE=luac.exe" luac.exe
 
 posix:
 	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_POSIX"
@@ -143,4 +158,4 @@ SunOS solaris:
 	$(MAKE) $(ALL) SYSCFLAGS="-DLUA_USE_POSIX -DLUA_USE_DLOPEN -D_REENTRANT" SYSLIBS="-ldl"
 
 # Targets that do not create files (not all makes understand .PHONY).
-.PHONY: all $(PLATS) help test clean default o a depend echo
+.PHONY: all $(PLATS) help test clean default obj depend echo exe lib
