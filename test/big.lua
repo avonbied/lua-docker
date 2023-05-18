@@ -2,7 +2,7 @@
 -- See Copyright Notice in file all.lua
 
 if _soft then
-  return 'a'
+	return 'a'
 end
 
 print "testing large tables"
@@ -27,8 +27,8 @@ for k in pairs(env) do env[k] = undef end
 
 -- yields during accesses larger than K (in RK)
 setmetatable(env, {
-  __index = function (t, n) coroutine.yield('g'); return _G[n] end,
-  __newindex = function (t, n, v) coroutine.yield('s'); _G[n] = v end,
+	__index = function (t, n) coroutine.yield('g'); return _G[n] end,
+	__newindex = function (t, n, v) coroutine.yield('s'); _G[n] = v end,
 })
 
 X = nil
@@ -68,7 +68,7 @@ local longs = string.rep("\0", ssize)   -- create one long string
 
 -- create function to concatenate 'repstrings' copies of its argument
 local rep = assert(load(
-  "local a = ...; return " .. string.rep("a", repstrings, "..")))
+	"local a = ...; return " .. string.rep("a", repstrings, "..")))
 
 local a, b = pcall(rep, longs)   -- call that function
 

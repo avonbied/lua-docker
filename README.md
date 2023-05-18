@@ -3,7 +3,11 @@
 This is an adaptation of the repository of Lua development code, as seen by the Lua team, for development with Docker.
 
 ## Prerequistites
-- [Docker](https://www.docker.com)
+- [Docker](https://www.docker.com)  
+
+**OR**
+- gnu make
+- Your choice of C/C++ compiler
 
 ## Structure
 
@@ -14,6 +18,18 @@ This is an adaptation of the repository of Lua development code, as seen by the 
 - `include` - PUBLIC header files (.h/.hpp files)
 - `src` - PRIVATE source files
 - `test` - tests files
+
+## Build Instructions
+
+Run the following in your shell:
+> `> make all`  
+> `> make test`  
+
+## TODO
+- [x] Fix build process in makefile for predictable outputs
+- [ ] Integrate tests into build process
+- [ ] Create minified Docker image for use with standalone Lua programs 
+- [ ] Create minified Docker image for use in generating Lua build artifacts (Multi-platform) 
 
 
 ## Official Lua Information

@@ -5,9 +5,9 @@
 
 local version = "Lua 5.4"
 if _VERSION ~= version then
-  io.stderr:write("This test suite is for ", version,
-                  ", not for ", _VERSION, "\nExiting tests")
-  return
+	io.stderr:write("This test suite is for ", version,
+		", not for ", _VERSION, "\nExiting tests")
+	return
 end
 
 
@@ -28,10 +28,10 @@ _nomsg = rawget(_G, "_nomsg") or false
 local usertests = rawget(_G, "_U")
 
 if usertests then
-  -- tests for sissies ;)  Avoid problems
-  _soft = true
-  _port = true
-  _nomsg = true
+	-- tests for sissies ;)  Avoid problems
+	_soft = true
+	_port = true
+	_nomsg = true
 end
 
 -- tests should require debug when needed
@@ -39,24 +39,24 @@ debug = nil
 
 
 if usertests then
-  T = nil    -- no "internal" tests for user tests
+	T = nil    -- no "internal" tests for user tests
 else
-  T = rawget(_G, "T")  -- avoid problems with 'strict' module
+	T = rawget(_G, "T")  -- avoid problems with 'strict' module
 end
 
 
 --[=[
-  example of a long [comment],
-  [[spanning several [lines]]]
+	example of a long [comment],
+	[[spanning several [lines]]]
 
 ]=]
 
 print("\n\tStarting Tests")
 
 do
-  -- set random seed
-  local random_x, random_y = math.randomseed()
-  print(string.format("random seeds: %d, %d", random_x, random_y))
+	-- set random seed
+	local random_x, random_y = math.randomseed()
+	print(string.format("random seeds: %d, %d", random_x, random_y))
 end
 
 print("current path:\n****" .. package.path .. "****\n")
@@ -73,63 +73,63 @@ do   -- (
 -- track messages for tests not performed
 local msgs = {}
 function Message (m)
-  if not _nomsg then
-    print(m)
-    msgs[#msgs+1] = string.sub(m, 3, -3)
-  end
+	if not _nomsg then
+		print(m)
+		msgs[#msgs+1] = string.sub(m, 3, -3)
+	end
 end
 
 assert(os.setlocale"C")
 
 local T,print,format,write,assert,type,unpack,floor =
-      T,print,string.format,io.write,assert,type,table.unpack,math.floor
+			T,print,string.format,io.write,assert,type,table.unpack,math.floor
 
 -- use K for 1000 and M for 1000000 (not 2^10 -- 2^20)
 local function F (m)
-  local function round (m)
-    m = m + 0.04999
-    return format("%.1f", m)      -- keep one decimal digit
-  end
-  if m < 1000 then return m
-  else
-    m = m / 1000
-    if m < 1000 then return round(m).."K"
-    else
-      return round(m/1000).."M"
-    end
-  end
+	local function round (m)
+		m = m + 0.04999
+		return format("%.1f", m)      -- keep one decimal digit
+	end
+	if m < 1000 then return m
+	else
+		m = m / 1000
+		if m < 1000 then return round(m).."K"
+		else
+			return round(m/1000).."M"
+		end
+	end
 end
 
 local Cstacklevel
 
 local showmem
 if not T then
-  local max = 0
-  showmem = function ()
-    local m = collectgarbage("count") * 1024
-    max = (m > max) and m or max
-    print(format("    ---- total memory: %s, max memory: %s ----\n",
-          F(m), F(max)))
-  end
-  Cstacklevel = function () return 0 end   -- no info about stack level
+	local max = 0
+	showmem = function ()
+		local m = collectgarbage("count") * 1024
+		max = (m > max) and m or max
+		print(format("    ---- total memory: %s, max memory: %s ----\n",
+			F(m), F(max)))
+	end
+	Cstacklevel = function () return 0 end   -- no info about stack level
 else
-  showmem = function ()
-    T.checkmemory()
-    local total, numblocks, maxmem = T.totalmem()
-    local count = collectgarbage("count")
-    print(format(
-      "\n    ---- total memory: %s (%.0fK), max use: %s,  blocks: %d\n",
-      F(total), count, F(maxmem), numblocks))
-    print(format("\t(strings:  %d, tables: %d, functions: %d, "..
-                 "\n\tudata: %d, threads: %d)",
-                 T.totalmem"string", T.totalmem"table", T.totalmem"function",
-                 T.totalmem"userdata", T.totalmem"thread"))
-  end
+	showmem = function ()
+		T.checkmemory()
+		local total, numblocks, maxmem = T.totalmem()
+		local count = collectgarbage("count")
+		print(format(
+			"\n    ---- total memory: %s (%.0fK), max use: %s,  blocks: %d\n",
+			F(total), count, F(maxmem), numblocks))
+		print(format("\t(strings:  %d, tables: %d, functions: %d, "..
+			"\n\tudata: %d, threads: %d)",
+			T.totalmem"string", T.totalmem"table", T.totalmem"function",
+			T.totalmem"userdata", T.totalmem"thread"))
+	end
 
-  Cstacklevel = function ()
-    local _, _, ncalls = T.stacklevel()
-    return ncalls    -- number of C calls
-  end
+	Cstacklevel = function ()
+		local _, _, ncalls = T.stacklevel()
+		return ncalls    -- number of C calls
+	end
 end
 
 
@@ -141,15 +141,15 @@ local Cstack = Cstacklevel()
 local function report (n) print("\n***** FILE '"..n.."'*****") end
 local olddofile = dofile
 local dofile = function (n, strip)
-  showmem()
-  local c = os.clock()
-  print(string.format("time: %g (+%g)", c - initclock, c - lastclock))
-  lastclock = c
-  report(n)
-  local f = assert(loadfile(n))
-  local b = string.dump(f, strip)
-  f = assert(load(b))
-  return f()
+	showmem()
+	local c = os.clock()
+	print(string.format("time: %g (+%g)", c - initclock, c - lastclock))
+	lastclock = c
+	report(n)
+	local f = assert(loadfile(n))
+	local b = string.dump(f, strip)
+	f = assert(load(b))
+	return f()
 end
 
 dofile('main.lua')
@@ -173,10 +173,10 @@ assert(dofile('locals.lua') == 5)
 dofile('constructs.lua')
 dofile('code.lua', true)
 if not _G._soft then
-  report('big.lua')
-  local f = coroutine.wrap(assert(loadfile('big.lua')))
-  assert(f() == 'b')
-  assert(f() == 'a')
+	report('big.lua')
+	local f = coroutine.wrap(assert(loadfile('big.lua')))
+	assert(f() == 'b')
+	assert(f() == 'a')
 end
 dofile('cstack.lua')
 dofile('nextvar.lua')
@@ -196,8 +196,8 @@ assert(dofile('verybig.lua', true) == 10); collectgarbage()
 dofile('files.lua')
 
 if #msgs > 0 then
-  local m = table.concat(msgs, "\n  ")
-  warn("#tests not performed:\n  ", m, "\n")
+	local m = table.concat(msgs, "\n  ")
+	warn("#tests not performed:\n  ", m, "\n")
 end
 
 print("(there should be two warnings now)")
@@ -215,7 +215,7 @@ assert(debug == nil)
 local debug = require "debug"
 
 print(string.format("%d-bit integers, %d-bit floats",
-        string.packsize("j") * 8, string.packsize("n") * 8))
+	string.packsize("j") * 8, string.packsize("n") * 8))
 
 debug.sethook(function (a) assert(type(a) == 'string') end, "cr")
 
@@ -224,36 +224,36 @@ _G.showmem = showmem
 
 
 assert(Cstack == Cstacklevel(),
-  "should be at the same C-stack level it was when started the tests")
+	"should be at the same C-stack level it was when started the tests")
 
 end   --)
 
 local _G, showmem, print, format, clock, time, difftime,
-      assert, open, warn =
-      _G, showmem, print, string.format, os.clock, os.time, os.difftime,
-      assert, io.open, warn
+	assert, open, warn =
+	_G, showmem, print, string.format, os.clock, os.time, os.difftime,
+	assert, io.open, warn
 
 -- file with time of last performed test
 local fname = T and "time-debug.txt" or "time.txt"
 local lasttime
 
 if not usertests then
-  -- open file with time of last performed test
-  local f = io.open(fname)
-  if f then
-    lasttime = assert(tonumber(f:read'a'))
-    f:close();
-  else   -- no such file; assume it is recording time for first time
-    lasttime = nil
-  end
+	-- open file with time of last performed test
+	local f = io.open(fname)
+	if f then
+		lasttime = assert(tonumber(f:read'a'))
+		f:close();
+	else   -- no such file; assume it is recording time for first time
+		lasttime = nil
+	end
 end
 
 -- erase (almost) all globals
 print('cleaning all!!!!')
 for n in pairs(_G) do
-  if not ({___Glob = 1, tostring = 1})[n] then
-    _G[n] = undef
-  end
+	if not ({___Glob = 1, tostring = 1})[n] then
+		_G[n] = undef
+	end
 end
 
 
@@ -270,15 +270,15 @@ walltime = difftime(time(), walltime)
 print(format("\n\ntotal time: %.2fs (wall time: %gs)\n", clocktime, walltime))
 
 if not usertests then
-  lasttime = lasttime or clocktime    -- if no last time, ignore difference
-  -- check whether current test time differs more than 5% from last time
-  local diff = (clocktime - lasttime) / lasttime
-  local tolerance = 0.05    -- 5%
-  if (diff >= tolerance or diff <= -tolerance) then
-    warn(format("#time difference from previous test: %+.1f%%",
-                  diff * 100))
-  end
-  assert(open(fname, "w")):write(clocktime):close()
+	lasttime = lasttime or clocktime    -- if no last time, ignore difference
+	-- check whether current test time differs more than 5% from last time
+	local diff = (clocktime - lasttime) / lasttime
+	local tolerance = 0.05    -- 5%
+	if (diff >= tolerance or diff <= -tolerance) then
+		warn(format("#time difference from previous test: %+.1f%%",
+			diff * 100))
+	end
+	assert(open(fname, "w")):write(clocktime):close()
 end
 
 print("final OK !!!")

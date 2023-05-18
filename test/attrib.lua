@@ -19,55 +19,55 @@ assert(type(package.config) == "string")
 print("package config: "..string.gsub(package.config, "\n", "|"))
 
 do
-  -- create a path with 'max' templates,
-  -- each with 1-10 repetitions of '?'
-  local max = _soft and 100 or 2000
-  local t = {}
-  for i = 1,max do t[i] = string.rep("?", i%10 + 1) end
-  t[#t + 1] = ";"    -- empty template
-  local path = table.concat(t, ";")
-  -- use that path in a search
-  local s, err = package.searchpath("xuxu", path)
-  -- search fails; check that message has an occurrence of
-  -- '??????????' with ? replaced by xuxu and at least 'max' lines
-  assert(not s and
-         string.find(err, string.rep("xuxu", 10)) and
-         #string.gsub(err, "[^\n]", "") >= max)
-  -- path with one very long template
-  local path = string.rep("?", max)
-  local s, err = package.searchpath("xuxu", path)
-  assert(not s and string.find(err, string.rep('xuxu', max)))
+	-- create a path with 'max' templates,
+	-- each with 1-10 repetitions of '?'
+	local max = _soft and 100 or 2000
+	local t = {}
+	for i = 1,max do t[i] = string.rep("?", i%10 + 1) end
+	t[#t + 1] = ";"    -- empty template
+	local path = table.concat(t, ";")
+	-- use that path in a search
+	local s, err = package.searchpath("xuxu", path)
+	-- search fails; check that message has an occurrence of
+	-- '??????????' with ? replaced by xuxu and at least 'max' lines
+	assert(not s and
+				 string.find(err, string.rep("xuxu", 10)) and
+				 #string.gsub(err, "[^\n]", "") >= max)
+	-- path with one very long template
+	local path = string.rep("?", max)
+	local s, err = package.searchpath("xuxu", path)
+	assert(not s and string.find(err, string.rep('xuxu', max)))
 end
 
 do
-  local oldpath = package.path
-  package.path = {}
-  local s, err = pcall(require, "no-such-file")
-  assert(not s and string.find(err, "package.path"))
-  package.path = oldpath
+	local oldpath = package.path
+	package.path = {}
+	local s, err = pcall(require, "no-such-file")
+	assert(not s and string.find(err, "package.path"))
+	package.path = oldpath
 end
 
 
 do  print"testing 'require' message"
-  local oldpath = package.path
-  local oldcpath = package.cpath
+	local oldpath = package.path
+	local oldcpath = package.cpath
 
-  package.path = "?.lua;?/?"
-  package.cpath = "?.so;?/init"
+	package.path = "?.lua;?/?"
+	package.cpath = "?.so;?/init"
 
-  local st, msg = pcall(require, 'XXX')
+	local st, msg = pcall(require, 'XXX')
 
-  local expected = [[module 'XXX' not found:
+	local expected = [[module 'XXX' not found:
 	no field package.preload['XXX']
 	no file 'XXX.lua'
 	no file 'XXX/XXX'
 	no file 'XXX.so'
 	no file 'XXX/init']]
 
-  assert(msg == expected)
+	assert(msg == expected)
 
-  package.path = oldpath
-  package.cpath = oldcpath
+	package.path = oldpath
+	package.cpath = oldcpath
 end
 
 print('+')
@@ -85,44 +85,44 @@ local DIR = "libs" .. dirsep
 
 -- prepend DIR to a name and correct directory separators
 local function D (x)
-  local x = string.gsub(x, "/", dirsep)
-  return DIR .. x
+	local x = string.gsub(x, "/", dirsep)
+	return DIR .. x
 end
 
 -- prepend DIR and pospend proper C lib. extension to a name
 local function DC (x)
-  local ext = (dirsep == '\\') and ".dll" or ".so"
-  return D(x .. ext)
+	local ext = (dirsep == '\\') and ".dll" or ".so"
+	return D(x .. ext)
 end
 
 
 local function createfiles (files, preextras, posextras)
-  for n,c in pairs(files) do
-    io.output(D(n))
-    io.write(string.format(preextras, n))
-    io.write(c)
-    io.write(string.format(posextras, n))
-    io.close(io.output())
-  end
+	for n,c in pairs(files) do
+		io.output(D(n))
+		io.write(string.format(preextras, n))
+		io.write(c)
+		io.write(string.format(posextras, n))
+		io.close(io.output())
+	end
 end
 
 local function removefiles (files)
-  for n in pairs(files) do
-    os.remove(D(n))
-  end
+	for n in pairs(files) do
+		os.remove(D(n))
+	end
 end
 
 local files = {
-  ["names.lua"] = "do return {...} end\n",
-  ["err.lua"] = "B = 15; a = a + 1;",
-  ["synerr.lua"] = "B =",
-  ["A.lua"] = "",
-  ["B.lua"] = "assert(...=='B');require 'A'",
-  ["A.lc"] = "",
-  ["A"] = "",
-  ["L"] = "",
-  ["XXxX"] = "",
-  ["C.lua"] = "package.loaded[...] = 25; require'C'",
+	["names.lua"] = "do return {...} end\n",
+	["err.lua"] = "B = 15; a = a + 1;",
+	["synerr.lua"] = "B =",
+	["A.lua"] = "",
+	["B.lua"] = "assert(...=='B');require 'A'",
+	["A.lc"] = "",
+	["A"] = "",
+	["L"] = "",
+	["XXxX"] = "",
+	["C.lua"] = "package.loaded[...] = 25; require'C'",
 }
 
 AA = nil
@@ -146,12 +146,12 @@ local oldpath = package.path
 package.path = string.gsub("D/?.lua;D/?.lc;D/?;D/??x?;D/L", "D/", DIR)
 
 local try = function (p, n, r, ext)
-  NAME = nil
-  local rr, x = require(p)
-  assert(NAME == n)
-  assert(REQUIRED == p)
-  assert(rr == r)
-  assert(ext == x)
+	NAME = nil
+	local rr, x = require(p)
+	assert(NAME == n)
+	assert(REQUIRED == p)
+	assert(rr == r)
+	assert(ext == x)
 end
 
 local a = require"names"
@@ -200,8 +200,8 @@ local _G = _G
 package.path = string.gsub("D/?.lua;D/?/init.lua", "D/", DIR)
 
 files = {
-  ["P1/init.lua"] = "AA = 10",
-  ["P1/xuxu.lua"] = "AA = 20",
+	["P1/init.lua"] = "AA = 10",
+	["P1/xuxu.lua"] = "AA = 20",
 }
 
 createfiles(files, "_ENV = {}\n", "\nreturn _ENV\n")
@@ -236,23 +236,23 @@ package.path = oldpath
 local fname = "file_does_not_exist2"
 local m, err = pcall(require, fname)
 for t in string.gmatch(package.path..";"..package.cpath, "[^;]+") do
-  t = string.gsub(t, "?", fname)
-  assert(string.find(err, t, 1, true))
+	t = string.gsub(t, "?", fname)
+	assert(string.find(err, t, 1, true))
 end
 
 do  -- testing 'package.searchers' not being a table
-  local searchers = package.searchers
-  package.searchers = 3
-  local st, msg = pcall(require, 'a')
-  assert(not st and string.find(msg, "must be a table"))
-  package.searchers = searchers
+	local searchers = package.searchers
+	package.searchers = 3
+	local st, msg = pcall(require, 'a')
+	assert(not st and string.find(msg, "must be a table"))
+	package.searchers = searchers
 end
 
 local function import(...)
-  local f = {...}
-  return function (m)
-    for i=1, #f do m[f[i]] = _G[f[i]] end
-  end
+	local f = {...}
+	return function (m)
+		for i=1, #f do m[f[i]] = _G[f[i]] end
+	end
 end
 
 -- cannot change environment of a C function
@@ -268,44 +268,44 @@ local p = ""   -- On Mac OS X, redefine this to "_"
 -- check whether loadlib works in this system
 local st, err, when = package.loadlib(DC"lib1", "*")
 if not st then
-  local f, err, when = package.loadlib("donotexist", p.."xuxu")
-  assert(not f and type(err) == "string" and when == "absent")
-  ;(Message or print)('\n >>> cannot load dynamic library <<<\n')
-  print(err, when)
+	local f, err, when = package.loadlib("donotexist", p.."xuxu")
+	assert(not f and type(err) == "string" and when == "absent")
+	;(Message or print)('\n >>> cannot load dynamic library <<<\n')
+	print(err, when)
 else
-  -- tests for loadlib
-  local f = assert(package.loadlib(DC"lib1", p.."onefunction"))
-  local a, b = f(15, 25)
-  assert(a == 25 and b == 15)
+	-- tests for loadlib
+	local f = assert(package.loadlib(DC"lib1", p.."onefunction"))
+	local a, b = f(15, 25)
+	assert(a == 25 and b == 15)
 
-  f = assert(package.loadlib(DC"lib1", p.."anotherfunc"))
-  assert(f(10, 20) == "10%20\n")
+	f = assert(package.loadlib(DC"lib1", p.."anotherfunc"))
+	assert(f(10, 20) == "10%20\n")
 
-  -- check error messages
-  local f, err, when = package.loadlib(DC"lib1", p.."xuxu")
-  assert(not f and type(err) == "string" and when == "init")
-  f, err, when = package.loadlib("donotexist", p.."xuxu")
-  assert(not f and type(err) == "string" and when == "open")
+	-- check error messages
+	local f, err, when = package.loadlib(DC"lib1", p.."xuxu")
+	assert(not f and type(err) == "string" and when == "init")
+	f, err, when = package.loadlib("donotexist", p.."xuxu")
+	assert(not f and type(err) == "string" and when == "open")
 
-  -- symbols from 'lib1' must be visible to other libraries
-  f = assert(package.loadlib(DC"lib11", p.."luaopen_lib11"))
-  assert(f() == "exported")
+	-- symbols from 'lib1' must be visible to other libraries
+	f = assert(package.loadlib(DC"lib11", p.."luaopen_lib11"))
+	assert(f() == "exported")
 
-  -- test C modules with prefixes in names
-  package.cpath = DC"?"
-  local lib2, ext = require"lib2-v2"
-  assert(string.find(ext, "libs/lib2-v2", 1, true))
-  -- check correct access to global environment and correct
-  -- parameters
-  assert(_ENV.x == "lib2-v2" and _ENV.y == DC"lib2-v2")
-  assert(lib2.id("x") == true)   -- a different "id" implementation
+	-- test C modules with prefixes in names
+	package.cpath = DC"?"
+	local lib2, ext = require"lib2-v2"
+	assert(string.find(ext, "libs/lib2-v2", 1, true))
+	-- check correct access to global environment and correct
+	-- parameters
+	assert(_ENV.x == "lib2-v2" and _ENV.y == DC"lib2-v2")
+	assert(lib2.id("x") == true)   -- a different "id" implementation
 
-  -- test C submodules
-  local fs, ext = require"lib1.sub"
-  assert(_ENV.x == "lib1.sub" and _ENV.y == DC"lib1")
-  assert(string.find(ext, "libs/lib1", 1, true))
-  assert(fs.id(45) == 45)
-  _ENV.x, _ENV.y = nil
+	-- test C submodules
+	local fs, ext = require"lib1.sub"
+	assert(_ENV.x == "lib1.sub" and _ENV.y == DC"lib1")
+	assert(string.find(ext, "libs/lib1", 1, true))
+	assert(fs.id(45) == 45)
+	_ENV.x, _ENV.y = nil
 end
 
 _ENV = _G
@@ -314,21 +314,21 @@ _ENV = _G
 -- testing preload
 
 do
-  local p = package
-  package = {}
-  p.preload.pl = function (...)
-    local _ENV = {...}
-    function xuxu (x) return x+20 end
-    return _ENV
-  end
+	local p = package
+	package = {}
+	p.preload.pl = function (...)
+		local _ENV = {...}
+		function xuxu (x) return x+20 end
+		return _ENV
+	end
 
-  local pl, ext = require"pl"
-  assert(require"pl" == pl)
-  assert(pl.xuxu(10) == 30)
-  assert(pl[1] == "pl" and pl[2] == ":preload:" and ext == ":preload:")
+	local pl, ext = require"pl"
+	assert(require"pl" == pl)
+	assert(pl.xuxu(10) == 30)
+	assert(pl[1] == "pl" and pl[2] == ":preload:" and ext == ":preload:")
 
-  package = p
-  assert(type(package.path) == "string")
+	package = p
+	assert(type(package.path) == "string")
 end
 
 print('+')
@@ -349,17 +349,17 @@ a[f()], b, a[f()+3] = f(), a, 'x'
 assert(a[10] == 10 and b == a and a[13] == 'x')
 
 do
-  local f = function (n) local x = {}; for i=1,n do x[i]=i end;
-                         return table.unpack(x) end;
-  local a,b,c
-  a,b = 0, f(1)
-  assert(a == 0 and b == 1)
-  a,b = 0, f(1)
-  assert(a == 0 and b == 1)
-  a,b,c = 0,5,f(4)
-  assert(a==0 and b==5 and c==1)
-  a,b,c = 0,5,f(0)
-  assert(a==0 and b==5 and c==nil)
+	local f = function (n) local x = {}; for i=1,n do x[i]=i end;
+												 return table.unpack(x) end;
+	local a,b,c
+	a,b = 0, f(1)
+	assert(a == 0 and b == 1)
+	a,b = 0, f(1)
+	assert(a == 0 and b == 1)
+	a,b,c = 0,5,f(4)
+	assert(a==0 and b==5 and c==1)
+	a,b,c = 0,5,f(0)
+	assert(a==0 and b==5 and c==nil)
 end
 
 local a, b, c, d = 1 and nil, 1 or nil, (1 and (nil or 1)), 6
@@ -429,7 +429,7 @@ a[1].alo(a[2]==10 and b==10 and c==print)
 
 a.aVeryLongName012345678901234567890123456789012345678901234567890123456789 = 10
 local function foo ()
-  return a.aVeryLongName012345678901234567890123456789012345678901234567890123456789
+	return a.aVeryLongName012345678901234567890123456789012345678901234567890123456789
 end
 assert(foo() == 10 and
 a.aVeryLongName012345678901234567890123456789012345678901234567890123456789 ==
@@ -437,13 +437,13 @@ a.aVeryLongName012345678901234567890123456789012345678901234567890123456789 ==
 
 
 do
-  -- _ENV constant
-  local function foo ()
-    local _ENV <const> = 11
-    X = "hi"
-  end
-  local st, msg = pcall(foo)
-  assert(not st and string.find(msg, "number"))
+	-- _ENV constant
+	local function foo ()
+		local _ENV <const> = 11
+		X = "hi"
+	end
+	local st, msg = pcall(foo)
+	assert(not st and string.find(msg, "number"))
 end
 
 
@@ -454,68 +454,68 @@ local maxint = math.maxinteger
 
 -- trim (if needed) to fit in a float
 while maxint ~= (maxint + 0.0) or (maxint - 1) ~= (maxint - 1.0) do
-  maxint = maxint // 2
+	maxint = maxint // 2
 end
 
 local maxintF = maxint + 0.0   -- float version
 
 assert(maxintF == maxint and math.type(maxintF) == "float" and
-       maxintF >= 2.0^14)
+			 maxintF >= 2.0^14)
 
 -- floats and integers must index the same places
 a[maxintF] = 10; a[maxintF - 1.0] = 11;
 a[-maxintF] = 12; a[-maxintF + 1.0] = 13;
 
 assert(a[maxint] == 10 and a[maxint - 1] == 11 and
-       a[-maxint] == 12 and a[-maxint + 1] == 13)
+			 a[-maxint] == 12 and a[-maxint + 1] == 13)
 
 a[maxint] = 20
 a[-maxint] = 22
 
 assert(a[maxintF] == 20 and a[maxintF - 1.0] == 11 and
-       a[-maxintF] == 22 and a[-maxintF + 1.0] == 13)
+			 a[-maxintF] == 22 and a[-maxintF + 1.0] == 13)
 
 a = nil
 
 
 -- test conflicts in multiple assignment
 do
-  local a,i,j,b
-  a = {'a', 'b'}; i=1; j=2; b=a
-  i, a[i], a, j, a[j], a[i+j] = j, i, i, b, j, i
-  assert(i == 2 and b[1] == 1 and a == 1 and j == b and b[2] == 2 and
-         b[3] == 1)
-  a = {}
-  local function foo ()    -- assigining to upvalues
-    b, a.x, a = a, 10, 20
-  end
-  foo()
-  assert(a == 20 and b.x == 10)
+	local a,i,j,b
+	a = {'a', 'b'}; i=1; j=2; b=a
+	i, a[i], a, j, a[j], a[i+j] = j, i, i, b, j, i
+	assert(i == 2 and b[1] == 1 and a == 1 and j == b and b[2] == 2 and
+				 b[3] == 1)
+	a = {}
+	local function foo ()    -- assigining to upvalues
+		b, a.x, a = a, 10, 20
+	end
+	foo()
+	assert(a == 20 and b.x == 10)
 end
 
 -- repeat test with upvalues
 do
-  local a,i,j,b
-  a = {'a', 'b'}; i=1; j=2; b=a
-  local function foo ()
-    i, a[i], a, j, a[j], a[i+j] = j, i, i, b, j, i
-  end
-  foo()
-  assert(i == 2 and b[1] == 1 and a == 1 and j == b and b[2] == 2 and
-         b[3] == 1)
-  local t = {}
-  (function (a) t[a], a = 10, 20  end)(1);
-  assert(t[1] == 10)
+	local a,i,j,b
+	a = {'a', 'b'}; i=1; j=2; b=a
+	local function foo ()
+		i, a[i], a, j, a[j], a[i+j] = j, i, i, b, j, i
+	end
+	foo()
+	assert(i == 2 and b[1] == 1 and a == 1 and j == b and b[2] == 2 and
+				 b[3] == 1)
+	local t = {}
+	(function (a) t[a], a = 10, 20  end)(1);
+	assert(t[1] == 10)
 end
 
 -- bug in 5.2 beta
 local function foo ()
-  local a
-  return function ()
-    local b
-    a, b = 3, 14    -- local and upvalue have same index
-    return a, b
-  end
+	local a
+	return function ()
+		local b
+		a, b = 3, 14    -- local and upvalue have same index
+		return a, b
+	end
 end
 
 local a, b = foo()()

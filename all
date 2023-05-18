@@ -1,6 +1,6 @@
 make -s -j
 cd test/libs; make -s
-cd ..     # back to directory 'tests'
+cd ..     # back to directory 'test'
 ulimit -S -s 1100
 if { .build/bin/lua -W all.lua; } then
   echo -e "\n\n    final OK!!!!\n\n"

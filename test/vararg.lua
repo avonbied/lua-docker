@@ -4,17 +4,17 @@
 print('testing vararg')
 
 local function f (a, ...)
-  local x = {n = select('#', ...), ...}
-  for i = 1, x.n do assert(a[i] == x[i]) end
-  return x.n
+	local x = {n = select('#', ...), ...}
+	for i = 1, x.n do assert(a[i] == x[i]) end
+	return x.n
 end
 
 local function c12 (...)
-  assert(arg == _G.arg)    -- no local 'arg'
-  local x = {...}; x.n = #x
-  local res = (x.n==2 and x[1] == 1 and x[2] == 2)
-  if res then res = 55 end
-  return res, 2
+	assert(arg == _G.arg)    -- no local 'arg'
+	local x = {...}; x.n = #x
+	local res = (x.n==2 and x[1] == 1 and x[2] == 2)
+	if res then res = 55 end
+	return res, 2
 end
 
 local function vararg (...) return {n = select('#', ...), ...} end
@@ -54,13 +54,13 @@ local i, a = 1, {}
 while i <= lim do a[i] = i+0.3; i=i+1 end
 
 function f(a, b, c, d, ...)
-  local more = {...}
-  assert(a == 1.3 and more[1] == 5.3 and
-         more[lim-4] == lim+0.3 and not more[lim-3])
+	local more = {...}
+	assert(a == 1.3 and more[1] == 5.3 and
+		more[lim-4] == lim+0.3 and not more[lim-3])
 end
 
 local function g (a,b,c)
-  assert(a == 1.3 and b == 2.3 and c == 3.3)
+	assert(a == 1.3 and b == 2.3 and c == 3.3)
 end
 
 call(f, a)
@@ -79,16 +79,16 @@ print("+")
 local function oneless (a, ...) return ... end
 
 function f (n, a, ...)
-  local b
-  assert(arg == _G.arg)   -- no local 'arg'
-  if n == 0 then
-    local b, c, d = ...
-    return a, b, c, d, oneless(oneless(oneless(...)))
-  else
-    n, b, a = n-1, ..., a
-    assert(b == ...)
-    return f(n, a, ...)
-  end
+	local b
+	assert(arg == _G.arg)   -- no local 'arg'
+	if n == 0 then
+		local b, c, d = ...
+		return a, b, c, d, oneless(oneless(oneless(...)))
+	else
+		n, b, a = n-1, ..., a
+		assert(b == ...)
+		return f(n, a, ...)
+	end
 end
 
 a,b,c,d,e = assert(f(10,5,4,3,2,1))
@@ -105,10 +105,10 @@ assert(x[1] == 2 and x[2] == 3 and x[3] == undef)
 
 
 f = load[[
-  local x = {...}
-  for i=1,select('#', ...) do assert(x[i] == select(i, ...)) end
-  assert(x[select('#', ...)+1] == undef)
-  return true
+	local x = {...}
+	for i=1,select('#', ...) do assert(x[i] == select(i, ...)) end
+	assert(x[select('#', ...)+1] == undef)
+	return true
 ]]
 
 assert(f("a", "b", nil, {}, assert))
@@ -133,8 +133,8 @@ p11, p12, p13, p14, p15, p16, p17, p18, p19, p20,
 p21, p22, p23, p24, p25, p26, p27, p28, p29, p30,
 p31, p32, p33, p34, p35, p36, p37, p38, p39, p40,
 p41, p42, p43, p44, p45, p46, p48, p49, p50, ...)
-  local a1,a2,a3,a4,a5,a6,a7
-  local a8,a9,a10,a11,a12,a13,a14
+	local a1,a2,a3,a4,a5,a6,a7
+	local a8,a9,a10,a11,a12,a13,a14
 end
 
 -- assertion fail here
@@ -142,10 +142,10 @@ f()
 
 -- missing arguments in tail call
 do
-  local function f(a,b,c) return c, b end
-  local function g() return f(1,2) end
-  local a, b = g()
-  assert(a == nil and b == 2)
+	local function f(a,b,c) return c, b end
+	local function g() return f(1,2) end
+	local a, b = g()
+	assert(a == nil and b == 2)
 end
-print('OK')
 
+print("OK")
