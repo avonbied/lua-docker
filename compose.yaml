@@ -1,0 +1,6 @@
+services:
+  lua-test:
+    image: alpine:latest
+    volumes:
+      - .:/lua_src
+    command: tail -f /dev/null
