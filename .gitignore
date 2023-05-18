@@ -7,6 +7,7 @@ build/
 *.a
 temp
 lua
+luac
 
 doc/manual.html
 
