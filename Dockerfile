@@ -2,7 +2,7 @@
 FROM alpine:latest AS build
 
 # Install make build tool & musl-dev for std headers
-RUN apk add --no-cache make musl-dev
+RUN apk add --no-cache make musl-dev gcc
 
 WORKDIR /lua_src
 
